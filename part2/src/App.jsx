@@ -14,7 +14,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')  
   const [term, setTerm] = useState('')  
 
-// test
+// test 2
 
   const addPerson = (event) => {
 
