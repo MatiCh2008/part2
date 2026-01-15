@@ -15,7 +15,7 @@ const App = () => {
   const [term, setTerm] = useState('')  
 
 
-
+  
   const addPerson = (event) => {
 
     event.preventDefault()
