@@ -18,7 +18,7 @@ useEffect(() => {
         setPersons(initialPersons)
       })
   }, [])
-  console.log('render', persons.length, 'notes')
+  console.log('render', persons.length, 'persons')
 
 
   
@@ -55,6 +55,22 @@ useEffect(() => {
     }
   }
 
+    const deleteAt = (id) => {
+      const person = persons.find((p) => p.id === id)
+
+      if (window.confirm(`delete ${person.name} ?`)) {
+        personService
+          .remove(id)
+          .then(() => {
+          setPersons(persons.filter(p => p.id !== id))
+          })
+          .catch((error) => {
+          alert(`Person '${person.name}' was already deleted from server`)
+          setPersons(persons.filter((p) => p.id !== id))
+          })
+      }    
+  }
+
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -85,7 +101,7 @@ useEffect(() => {
           newNumber={newNumber} 
           handleNumberChange={handleNumberChange}/>
       <h3>Numbers</h3>
-        <Persons personsToShow={personsToShow}/>
+        <Persons personsToShow={personsToShow} deleteAt={deleteAt}/>
         
 
     </div>
