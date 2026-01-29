@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import personService from './services/persons'
 
 // test
 const App = () => {
@@ -11,13 +11,11 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')  
   const [term, setTerm] = useState('')  
 
-    useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+useEffect(() => {
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
   console.log('render', persons.length, 'notes')
@@ -49,9 +47,11 @@ const App = () => {
     alert(`Number ${trimmedNumber} is already added to phonebook`)      
     }
     else {
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')    
+      personService.create(personObject).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('') 
+        setNewNumber('')
+      })
     }
   }
 
