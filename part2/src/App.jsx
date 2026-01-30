@@ -20,7 +20,21 @@ useEffect(() => {
   }, [])
   console.log('render', persons.length, 'persons')
 
-
+  const changeNumberOf = (id, newNumber) => {
+    const person = persons.find((p) => p.id === id)
+    const changedPerson = { ...person, number: newNumber }
+    personService
+    .update(id, changedPerson)
+    .then((returnedPerson) => {
+      setPersons(persons.map((person) => (person.id !== id ? person : returnedPerson)))
+      setNewName('')
+      setNewNumber('')
+    })
+    .catch((error) => {
+      alert(`Person '${person.name}' was already deleted from server`)
+      setPersons(persons.filter((p) => p.id !== id))
+    })
+  }
   
   const addPerson = (event) => {
 
@@ -34,17 +48,21 @@ useEffect(() => {
       number: trimmedNumber
     }
 
-    const nameExists = persons.some(person => person.name.toLowerCase() === trimmedName.toLowerCase())
+    const existingPerson = persons.find(p => 
+      p.name.trim().replace(/\s+/g, ' ').toLowerCase() === trimmedName.toLowerCase()
+    )
     const numberExists = persons.some(person => person.number === trimmedNumber)    
 
     if (!trimmedName || !trimmedNumber){
     alert(`Name and number are required`)
-    }    
-    else if (nameExists){
-    alert(`${trimmedName} is already added to phonebook`)
-    }
+    }  
     else if (numberExists){
     alert(`Number ${trimmedNumber} is already added to phonebook`)      
+    }      
+    else if (existingPerson){
+      if (window.confirm(`${trimmedName} is already added to phonebook, replace the old number with a new one?`)) {
+          changeNumberOf(existingPerson.id, trimmedNumber)
+      }    
     }
     else {
       personService.create(personObject).then((returnedPerson) => {
