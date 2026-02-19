@@ -1,93 +1,84 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
-import Filter from './components/Filter'
-import PersonForm from './components/PersonForm'
-import Persons from './components/Persons'
+import Footer from './components/Footer'
+import Note from './components/Note'
+import noteService from './services/notes'
+import Notification from './components/Notification'
 
-// test
 const App = () => {
-  const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')  
-  const [term, setTerm] = useState('')  
+  const [notes, setNotes] = useState([])
+  const [newNote, setNewNote] = useState('')
+  const [showAll, setShowAll] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('some error happened...')
 
-    useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-      })
+  useEffect(() => {
+    noteService.getAll().then((initialNotes) => {
+      setNotes(initialNotes)
+    })
   }, [])
-  console.log('render', persons.length, 'notes')
 
-
-  
-  const addPerson = (event) => {
-
+  const addNote = (event) => {
     event.preventDefault()
-
-    const trimmedName = newName.trim().replace(/\s+/g, ' ');
-    const trimmedNumber = newNumber.trim().replace(/\s+/g, ' ');
-    
-    const personObject = {
-      name: trimmedName,
-      number: trimmedNumber
+    const noteObject = {
+      content: newNote,
+      important: Math.random() > 0.5,
     }
 
-    const nameExists = persons.some(person => person.name.toLowerCase() === trimmedName.toLowerCase())
-    const numberExists = persons.some(person => person.number === trimmedNumber)    
-
-    if (!trimmedName || !trimmedNumber){
-    alert(`Name and number are required`)
-    }    
-    else if (nameExists){
-    alert(`${trimmedName} is already added to phonebook`)
-    }
-    else if (numberExists){
-    alert(`Number ${trimmedNumber} is already added to phonebook`)      
-    }
-    else {
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')    
-    }
+    noteService.create(noteObject).then((returnedNote) => {
+      setNotes(notes.concat(returnedNote))
+      setNewNote('')
+    })
   }
 
-  const handleNameChange = (event) => {
-    setNewName(event.target.value)
+  const toggleImportanceOf = id => {
+    const note = notes.find(n => n.id === id)
+    const changedNote = { ...note, important: !note.important }
+
+    noteService
+      .update(id, changedNote).then(returnedNote => {
+        setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+      })
+      .catch(error => {
+
+        setErrorMessage(
+          `Note '${note.content}' was already removed from server`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+        setNotes(notes.filter(n => n.id !== id))
+      })
   }
 
-  const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-  }  
+  const handleNoteChange = (event) => {
+    setNewNote(event.target.value)
+  }
 
-  const handleTermChange = (event) => {
-    setTerm(event.target.value)
-  }    
-
-  console.log(persons)
-
-  const personsToShow = !term
-  ? persons
-  : persons.filter(person => person.name.toLowerCase().includes(term.toLowerCase()))
+  const notesToShow = showAll ? notes : notes.filter((note) => note.important)
 
   return (
     <div>
-      <h2>Phonebook</h2>
-        <Filter term={term} handleTermChange={handleTermChange}/>
-      <h3>Add a new</h3>      
-        <PersonForm 
-          addPerson={addPerson} 
-          newName={newName} 
-          handleNameChange={handleNameChange}
-          newNumber={newNumber} 
-          handleNumberChange={handleNumberChange}/>
-      <h3>Numbers</h3>
-        <Persons personsToShow={personsToShow}/>
-        
+      <h1>Notes</h1>
+      <Notification message={errorMessage} />
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          show {showAll ? 'important' : 'all'}
+        </button>
+      </div>
+      <ul>
+        {notesToShow.map((note) => (
+          <Note
+            key={note.id}
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)}
+          />
+        ))}
+      </ul>
+      <form onSubmit={addNote}>
+        <input value={newNote} onChange={handleNoteChange} />
+        <button type="submit">save</button>
+      </form>
 
+      <Footer />
     </div>
   )
 }
