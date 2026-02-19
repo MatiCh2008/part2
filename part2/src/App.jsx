@@ -3,6 +3,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 // test
 const App = () => {
@@ -110,6 +111,7 @@ useEffect(() => {
   return (
     <div>
       <h2>Phonebook</h2>
+        <Notification message="dhdfshdfs" />
         <Filter term={term} handleTermChange={handleTermChange}/>
       <h3>Add a new</h3>      
         <PersonForm 
