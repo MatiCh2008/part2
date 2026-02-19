@@ -64,6 +64,7 @@ useEffect(() => {
     else if (existingPerson){
       if (window.confirm(`${trimmedName} is already added to phonebook, replace the old number with a new one?`)) {
           changeNumberOf(existingPerson.id, trimmedNumber)
+          setAddedMessage(`Changed ${trimmedName}'s Phone number`)          
       }    
     }
     else {
@@ -71,7 +72,7 @@ useEffect(() => {
         setPersons(persons.concat(returnedPerson))
         setNewName('') 
         setNewNumber('')
-        setAddedMessage(`Added ${newName}`)
+        setAddedMessage(`Added ${trimmedName}`)
       })
     }
   }
