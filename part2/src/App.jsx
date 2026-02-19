@@ -11,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')  
   const [term, setTerm] = useState('')  
+  const [addedMessage, setAddedMessage] = useState('Person is added')
 
 useEffect(() => {
     personService
@@ -70,6 +71,7 @@ useEffect(() => {
         setPersons(persons.concat(returnedPerson))
         setNewName('') 
         setNewNumber('')
+        setAddedMessage(`Added ${newName}`)
       })
     }
   }
@@ -111,7 +113,7 @@ useEffect(() => {
   return (
     <div>
       <h2>Phonebook</h2>
-        <Notification message="dhdfshdfs" />
+        <Notification message={addedMessage} />
         <Filter term={term} handleTermChange={handleTermChange}/>
       <h3>Add a new</h3>      
         <PersonForm 
