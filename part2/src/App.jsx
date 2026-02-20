@@ -12,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')  
   const [term, setTerm] = useState('')  
   const [message, setMessage] = useState(null)
+  const [messageType, setMessageType] = useState('')
 
 useEffect(() => {
     personService
@@ -22,7 +23,8 @@ useEffect(() => {
   }, [])
   console.log('render', persons.length, 'persons')
 
-  const showMessage = (text) => {
+  const showMessage = (text, type) => {
+    setMessageType(type)
     setMessage(text) 
     setTimeout(() => {
         setMessage(null)
@@ -38,10 +40,10 @@ useEffect(() => {
       setPersons(persons.map((person) => (person.id !== id ? person : returnedPerson)))
       setNewName('')
       setNewNumber('')  
-      showMessage(`Changed ${person.name}'s Phone number`)      
+      showMessage(`Changed ${person.name}'s Phone number`, 'success')      
     })
     .catch((error) => {
-      alert(`Person '${person.name}' was already deleted from server`)
+      showMessage(`Information of ${person.name} has already been removed from server`, 'danger')  
       setPersons(persons.filter((p) => p.id !== id))
     })
   }
@@ -79,7 +81,7 @@ useEffect(() => {
         setPersons(persons.concat(returnedPerson))
         setNewName('') 
         setNewNumber('')
-        showMessage(`Added ${trimmedName}`)
+        showMessage(`Added ${trimmedName}`, 'success')
       })
     }
   }
@@ -92,10 +94,10 @@ useEffect(() => {
           .remove(id)
           .then(() => {
           setPersons(persons.filter(p => p.id !== id))
-          showMessage(`Deleted ${person.name}`)
+          showMessage(`Deleted ${person.name}`, 'success')
           })
           .catch((error) => {
-          alert(`Person '${person.name}' was already deleted from server`)
+          showMessage(`Information of ${person.name} has already been removed from server`, 'danger')  
           setPersons(persons.filter((p) => p.id !== id))
           })
       }    
@@ -122,7 +124,7 @@ useEffect(() => {
   return (
     <div>
       <h2>Phonebook</h2>
-        <Notification message={message} />
+        <Notification message={message} type={messageType}/>
         <Filter term={term} handleTermChange={handleTermChange}/>
       <h3>Add a new</h3>      
         <PersonForm 
