@@ -11,7 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')  
   const [term, setTerm] = useState('')  
-  const [Message, setMessage] = useState('Person is added')
+  const [message, setMessage] = useState(null)
 
 useEffect(() => {
     personService
@@ -22,6 +22,13 @@ useEffect(() => {
   }, [])
   console.log('render', persons.length, 'persons')
 
+  const showMessage = (text) => {
+    setMessage(text) 
+    setTimeout(() => {
+        setMessage(null)
+      }, 5000)  
+  }
+
   const changeNumberOf = (id, newNumber) => {
     const person = persons.find((p) => p.id === id)
     const changedPerson = { ...person, number: newNumber }
@@ -30,11 +37,8 @@ useEffect(() => {
     .then((returnedPerson) => {
       setPersons(persons.map((person) => (person.id !== id ? person : returnedPerson)))
       setNewName('')
-      setNewNumber('')
-      setMessage(`Changed ${person.name}'s Phone number`) 
-      setTimeout(() => {
-          setMessage(null)
-        }, 5000)    
+      setNewNumber('')  
+      showMessage(`Changed ${person.name}'s Phone number`)      
     })
     .catch((error) => {
       alert(`Person '${person.name}' was already deleted from server`)
@@ -75,10 +79,7 @@ useEffect(() => {
         setPersons(persons.concat(returnedPerson))
         setNewName('') 
         setNewNumber('')
-        setMessage(`Added ${trimmedName}`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)   
+        showMessage(`Added ${trimmedName}`)
       })
     }
   }
@@ -91,10 +92,7 @@ useEffect(() => {
           .remove(id)
           .then(() => {
           setPersons(persons.filter(p => p.id !== id))
-          setMessage(`Deleted ${person.name}`)    
-          setTimeout(() => {
-          setMessage(null)
-          }, 5000)         
+          showMessage(`Deleted ${person.name}`)
           })
           .catch((error) => {
           alert(`Person '${person.name}' was already deleted from server`)
@@ -124,7 +122,7 @@ useEffect(() => {
   return (
     <div>
       <h2>Phonebook</h2>
-        <Notification message={Message} />
+        <Notification message={message} />
         <Filter term={term} handleTermChange={handleTermChange}/>
       <h3>Add a new</h3>      
         <PersonForm 
