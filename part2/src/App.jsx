@@ -25,7 +25,7 @@ const App = () => {
     setTerm(event.target.value)
   }    
 
-  const countriesToShow = countries.filter(country =>
+  const countriesToShow = term === '' ? [] : countries.filter(country =>
     country.name.common.toLowerCase().includes(term.toLowerCase())
   )
 
@@ -34,7 +34,7 @@ const App = () => {
       <h2>Countries</h2>
         <Filter term={term} handleTermChange={handleTermChange}/>      
 
-        <Countries countriesToShow={countriesToShow} term={term}/>
+        <Countries countries={countriesToShow} term={term}/>
 
     </div>
   )
