@@ -1,7 +1,7 @@
 import Country from './Country'
 import CountryDetails from './CountryDetails';
 
-const Countries = ({ countries, term, handleShow }) => {
+const Countries = ({ countries, term, handleShow, shownCountry }) => {
 
     if (term === ""){
         return null;        
@@ -9,7 +9,18 @@ const Countries = ({ countries, term, handleShow }) => {
 
     if (countries.length > 10){
         return <p>Too many matches, specify another filter</p>;
-    }   
+    }  
+    
+    if (shownCountry){      
+        return (
+            <div>
+                <CountryDetails
+                    country={shownCountry}
+                    />
+    
+            </div>            
+            )          
+    }
     
     if (countries.length === 1){
         return (
@@ -32,7 +43,7 @@ const Countries = ({ countries, term, handleShow }) => {
             <Country 
             key={country.cca3} 
             country={country} 
-            handleShow={() => handleShow(country)} 
+            handleShow={() => handleShow(country.cca3)} 
             />
         )}
 
