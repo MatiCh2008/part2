@@ -4,9 +4,6 @@ import countryService  from './services/Countries'
 import Countries from './components/Countries'
 
 
-
-
-
 const App = () => { 
   const [term, setTerm] = useState('')  
   const [shownCountry, setShownCountry] = useState(null)    
