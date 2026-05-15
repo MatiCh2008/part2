@@ -43,8 +43,16 @@ useEffect(() => {
       showMessage(`Changed ${person.name}'s Phone number`, 'success')      
     })
     .catch((error) => {
+      if (error.response && error.response.data && error.response.data.error){
+        console.log(error.response.data.error)
+        const errorMessage = error.response.data.error;
+        showMessage(errorMessage, "danger");   
+      }
+      else {
       showMessage(`Information of ${person.name} has already been removed from server`, 'danger')  
-      setPersons(persons.filter((p) => p.id !== id))
+      setPersons(persons.filter((p) => p.id !== id))        
+      }
+
     })
   }
   
@@ -67,9 +75,11 @@ useEffect(() => {
 
     if (!trimmedName || !trimmedNumber){
     alert(`Name and number are required`)
+    return
     }  
     else if (numberExists){
-    alert(`Number ${trimmedNumber} is already added to phonebook`)      
+    alert(`Number ${trimmedNumber} is already added to phonebook`)   
+    return   
     }      
     else if (existingPerson){
       if (window.confirm(`${trimmedName} is already added to phonebook, replace the old number with a new one?`)) {
@@ -82,6 +92,12 @@ useEffect(() => {
         setNewName('') 
         setNewNumber('')
         showMessage(`Added ${trimmedName}`, 'success')
+      })
+      .catch(error => {
+        // this is the way to access the error message
+        console.log(error.response.data.error)
+        const errorMessage = error.response.data.error;
+        showMessage(errorMessage, "danger");     
       })
     }
   }
